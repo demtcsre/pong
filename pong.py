@@ -8,6 +8,7 @@ bg_color = (0,0,139)
 
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Pong Game")
+screen.fill(bg_color)
 
 pad_w, pad_h = 20, 200
 
@@ -40,52 +41,44 @@ def draw(screen, paddles):
     for paddle in paddles:
         paddle.draw(screen)
 
+    for i in range(0, height, height//20):
+        pygame.draw.rect(screen, (0,0,0), ((width//2 - 5), i, 10, height//20))
+
     pygame.display.update()
+
+def paddle_move_keys(keys, l_p, r_p):
+    if keys[pygame.K_w] and l_p.y >= l_p.vel:
+        l_p.move(up=True)
+    if keys[pygame.K_s] and l_p.y + l_p.vel <= height - l_p.height:
+        l_p.move(up=False)
+    if keys[pygame.K_UP] and r_p.y >= r_p.vel:
+        r_p.move(up=True)
+    if keys[pygame.K_DOWN] and r_p.y + r_p.vel <= height - r_p.height:
+        r_p.move(up=False)
 
 def main():
     run = True
     clock = pygame.time.Clock()
 
-    l_padd = Paddle(10, height//2 - pad_h//2, pad_w, pad_h)
-    r_padd = Paddle(width - 10 - pad_w, height//2 - pad_h//2, pad_w, pad_h)
-    padds = [l_padd, r_padd]
+    l_p = Paddle(10, height//2 - pad_h//2, pad_w, pad_h)
+    r_p = Paddle(width - 10 - pad_w, height//2 - pad_h//2, pad_w, pad_h)
+    padds = [l_p, r_p]
 
     while run:
-        screen.fill(bg_color)
-        draw(screen, padds)
-
-        clock.tick(fps)
-
         for event in pygame.event.get():
             if event.type == pygame.quit:
                 run = False
                 break
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                if event.key == pygame.K_w and l_padd.y > 0:
-                    l_padd.move(up=True)
-                if event.key == pygame.K_s and l_padd.y <= height - l_padd.height:
-                    l_padd.static = False
-                    l_padd.move(up=False)
-                if event.key == pygame.K_UP and r_padd.y > 0:
-                    r_padd.static = False
-                    r_padd.move(up=True)
-                if event.key == pygame.K_DOWN and r_padd.y <= height - r_padd.height:
-                    r_padd.static = False
-                    r_padd.move(up=False)
-                    
-            # elif event.type == pygame.KEYUP:
-            #     if event.key == pygame.K_w:
-            #         l_padd.static = True
-            #     if event.key == pygame.K_s:
-            #         l_padd.static = True
-            #     if event.key == pygame.K_UP:
-            #         r_padd.static = True
-            #     if event.key == pygame.K_DOWN:
-            #         r_padd.static = True
+        clock.tick(fps)
+        draw(screen, padds)
 
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
+        paddle_move_keys(keys, l_p, r_p)
+
+        pygame.display.update()
 
 if __name__ == "__main__":
     main()
