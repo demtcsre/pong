@@ -11,6 +11,7 @@ pygame.display.set_caption("Pong Game")
 screen.fill(bg_color)
 
 pad_w, pad_h = 20, 200
+ball_rad = 10
 
 class Paddle():
     color = (102,102,255)
@@ -32,10 +33,24 @@ class Paddle():
             self.y += self.vel
 
 class Ball():
-    def __init__(self):
-        pass
+    vel = 5
+    color = (255,255,255)
 
-def draw(screen, paddles):
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.x_vel = self.vel
+        self.y_vel = 0
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, (self.x,self.y), self.radius)
+
+    def move(self):
+        self.x += self.x_vel
+        self.y += self.y_vel
+
+def draw(screen, paddles, ball):
     screen.fill(bg_color)
     
     for paddle in paddles:
@@ -44,6 +59,7 @@ def draw(screen, paddles):
     for i in range(0, height, height//20):
         pygame.draw.rect(screen, (0,0,0), ((width//2 - 5), i, 10, height//20))
 
+    ball.draw(screen)
     pygame.display.update()
 
 def paddle_move_keys(keys, l_p, r_p):
@@ -63,6 +79,7 @@ def main():
     l_p = Paddle(10, height//2 - pad_h//2, pad_w, pad_h)
     r_p = Paddle(width - 10 - pad_w, height//2 - pad_h//2, pad_w, pad_h)
     padds = [l_p, r_p]
+    ball= Ball(width//2, height//2, ball_rad)
 
     while run:
         for event in pygame.event.get():
@@ -71,7 +88,7 @@ def main():
                 break
 
         clock.tick(fps)
-        draw(screen, padds)
+        draw(screen, padds, ball)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
